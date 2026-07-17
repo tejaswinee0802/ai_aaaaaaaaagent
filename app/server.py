@@ -5,66 +5,63 @@ Run:
     python3 app/server.py
 Then open http://127.0.0.1:5050
 
-Reservations are stored in app/reservations.db (SQLite). Inventory comes
-from data/hotels_master.csv via app/inventory.py (demo rates - swap for a
-live channel-manager feed in production).
+Reservations are stored in Postgres when DATABASE_URL is set (production,
+e.g. Render - see render.yaml), otherwise in a local SQLite file. Inventory
+comes from data/hotels_master.csv via app/inventory.py (demo rates - swap
+for a live channel-manager feed in production).
 """
 
 import datetime
 import os
-import sqlite3
 import string
 import random
 from pathlib import Path
 
-from flask import Flask, g, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for
+from sqlalchemy import (Column, Float, Integer, MetaData, String, Table, Text,
+                        create_engine, select)
 
 import inventory
 
 APP_DIR = Path(__file__).resolve().parent
-# Set DB_PATH env var in production to a persistent-disk location, otherwise
-# the SQLite file sits next to the code (fine locally; on platforms with
-# ephemeral filesystems it is wiped on every redeploy).
-DB_PATH = Path(os.environ.get("DB_PATH", APP_DIR / "reservations.db"))
 
 app = Flask(__name__)
 
 
 # ---------------------------------------------------------------------------
-# DB
+# DB - Postgres via DATABASE_URL in production, SQLite locally
 # ---------------------------------------------------------------------------
-def get_db():
-    if "db" not in g:
-        g.db = sqlite3.connect(DB_PATH)
-        g.db.row_factory = sqlite3.Row
-        g.db.execute("""
-            CREATE TABLE IF NOT EXISTS reservations (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                ref TEXT UNIQUE NOT NULL,
-                hotel_id INTEGER NOT NULL,
-                hotel_name TEXT NOT NULL,
-                room_name TEXT NOT NULL,
-                check_in TEXT NOT NULL,
-                check_out TEXT NOT NULL,
-                guests INTEGER NOT NULL,
-                nights INTEGER NOT NULL,
-                price_per_night REAL NOT NULL,
-                total_price REAL NOT NULL,
-                promo TEXT,
-                guest_name TEXT NOT NULL,
-                guest_email TEXT NOT NULL,
-                guest_phone TEXT,
-                created_at TEXT NOT NULL
-            )
-        """)
-    return g.db
+def _database_url():
+    url = os.environ.get("DATABASE_URL", "")
+    if url.startswith("postgres://"):  # Render/Heroku style -> SQLAlchemy style
+        url = url.replace("postgres://", "postgresql://", 1)
+    if url:
+        return url
+    return f"sqlite:///{os.environ.get('DB_PATH', APP_DIR / 'reservations.db')}"
 
 
-@app.teardown_appcontext
-def close_db(exc):
-    db = g.pop("db", None)
-    if db is not None:
-        db.close()
+engine = create_engine(_database_url(), pool_pre_ping=True)
+metadata = MetaData()
+reservations = Table(
+    "reservations", metadata,
+    Column("id", Integer, primary_key=True),
+    Column("ref", String(20), unique=True, nullable=False),
+    Column("hotel_id", Integer, nullable=False),
+    Column("hotel_name", Text, nullable=False),
+    Column("room_name", Text, nullable=False),
+    Column("check_in", String(10), nullable=False),
+    Column("check_out", String(10), nullable=False),
+    Column("guests", Integer, nullable=False),
+    Column("nights", Integer, nullable=False),
+    Column("price_per_night", Float, nullable=False),
+    Column("total_price", Float, nullable=False),
+    Column("promo", Text),
+    Column("guest_name", Text, nullable=False),
+    Column("guest_email", Text, nullable=False),
+    Column("guest_phone", Text),
+    Column("created_at", String(25), nullable=False),
+)
+metadata.create_all(engine)
 
 
 def new_ref():
@@ -201,21 +198,19 @@ def book(hotel_id):
                                    check_in=check_in.isoformat(), check_out=check_out.isoformat(),
                                    errors=errors, guest_name=name, guest_email=email,
                                    guest_phone=phone)
-        db = get_db()
-        ref = new_ref()
-        while db.execute("SELECT 1 FROM reservations WHERE ref=?", (ref,)).fetchone():
+        with engine.begin() as conn:
             ref = new_ref()
-        db.execute(
-            """INSERT INTO reservations
-               (ref, hotel_id, hotel_name, room_name, check_in, check_out, guests,
-                nights, price_per_night, total_price, promo, guest_name, guest_email,
-                guest_phone, created_at)
-               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-            (ref, hotel_id, hotel["name"], room["name"], check_in.isoformat(),
-             check_out.isoformat(), guests, nights, price, total, hotel["promo"],
-             name, email, phone, datetime.datetime.now().isoformat(timespec="seconds")),
-        )
-        db.commit()
+            while conn.execute(select(reservations.c.id)
+                               .where(reservations.c.ref == ref)).first():
+                ref = new_ref()
+            conn.execute(reservations.insert().values(
+                ref=ref, hotel_id=hotel_id, hotel_name=hotel["name"],
+                room_name=room["name"], check_in=check_in.isoformat(),
+                check_out=check_out.isoformat(), guests=guests, nights=nights,
+                price_per_night=price, total_price=total, promo=hotel["promo"],
+                guest_name=name, guest_email=email, guest_phone=phone,
+                created_at=datetime.datetime.now().isoformat(timespec="seconds"),
+            ))
         return redirect(url_for("confirmation", ref=ref))
 
     return render_template("book.html", hotel=hotel, room=room, price=price, total=total,
@@ -226,7 +221,9 @@ def book(hotel_id):
 
 @app.route("/confirmation/<ref>")
 def confirmation(ref):
-    row = get_db().execute("SELECT * FROM reservations WHERE ref=?", (ref,)).fetchone()
+    with engine.connect() as conn:
+        row = conn.execute(select(reservations)
+                           .where(reservations.c.ref == ref)).mappings().first()
     if not row:
         return render_template("404.html"), 404
     return render_template("confirmation.html", r=row)
@@ -237,9 +234,11 @@ def bookings():
     email = request.args.get("email", "").strip()
     rows = []
     if email:
-        rows = get_db().execute(
-            "SELECT * FROM reservations WHERE guest_email=? ORDER BY created_at DESC",
-            (email,)).fetchall()
+        with engine.connect() as conn:
+            rows = conn.execute(
+                select(reservations)
+                .where(reservations.c.guest_email == email)
+                .order_by(reservations.c.created_at.desc())).mappings().all()
     return render_template("bookings.html", rows=rows, email=email)
 
 

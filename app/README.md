@@ -24,8 +24,24 @@ python3 app/server.py
 | Confirmation | `/confirmation/<ref>` | Unique `CHW-XXXXXX` reference, full booking recap |
 | My bookings | `/bookings` | Look up all reservations by email |
 
-Reservations persist in `app/reservations.db` (SQLite, created on first run,
+Reservations persist in Postgres when `DATABASE_URL` is set (production),
+otherwise in `app/reservations.db` (SQLite, created on first run,
 git-ignored).
+
+## Deploying
+
+The repo root has a `render.yaml` blueprint: on [Render](https://render.com),
+choose **New -> Blueprint**, select this repo, and Render provisions the web
+service plus a managed Postgres database and wires `DATABASE_URL`
+automatically. Any Procfile-style host (Railway, Fly.io, Heroku) also works:
+
+```
+web: gunicorn --chdir app server:app --bind 0.0.0.0:$PORT
+```
+
+To serve it on your own domain, add a custom domain (e.g.
+`booking.chwit.mu`) in the host's dashboard and create the CNAME record it
+gives you at your registrar.
 
 ## Architecture notes
 
