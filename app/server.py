@@ -11,6 +11,7 @@ live channel-manager feed in production).
 """
 
 import datetime
+import os
 import sqlite3
 import string
 import random
@@ -21,7 +22,10 @@ from flask import Flask, g, redirect, render_template, request, url_for
 import inventory
 
 APP_DIR = Path(__file__).resolve().parent
-DB_PATH = APP_DIR / "reservations.db"
+# Set DB_PATH env var in production to a persistent-disk location, otherwise
+# the SQLite file sits next to the code (fine locally; on platforms with
+# ephemeral filesystems it is wiped on every redeploy).
+DB_PATH = Path(os.environ.get("DB_PATH", APP_DIR / "reservations.db"))
 
 app = Flask(__name__)
 
@@ -245,4 +249,6 @@ def not_found(e):
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5050, debug=False)
+    app.run(host=os.environ.get("HOST", "127.0.0.1"),
+            port=int(os.environ.get("PORT", 5050)),
+            debug=False)
