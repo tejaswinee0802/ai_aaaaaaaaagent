@@ -44,7 +44,10 @@ git-ignored).
 - Rates are illustrative, not live inventory (footer on every page says so).
 - No payment step, no real confirmation emails, no user accounts/login.
 - No flight booking (chwit.mu also sells flights) - hotel-only for now.
-- Visual design is a neutral tropical-OTA look: the live chwit.mu site was
-  not reachable from this build environment (network egress policy), so the
-  exact branding could not be replicated. Share brand assets/screenshots and
-  the CSS variables + logo block can be matched to the real site.
+- Branding matches the official chwit! logo supplied by the owner: coral
+  palette (`--brand: #f8756c` in `static/style.css`), the lowercase
+  "chwit!" wordmark with the Esc-key badge as the dot of the i (recreated
+  in HTML/CSS in `templates/base.html` using the Baloo 2 rounded font),
+  and the "Big World. Bigger You." tagline. If a vector/PNG logo file is
+  preferred over the CSS recreation, drop it in `static/` and swap the
+  `.logo` markup in `base.html`.
