@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Chwit Travel - Hotels in Mauritius{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="{{ url_for('home') }}">
+        <span class="logo-mark">C</span> Chwit<span class="logo-accent">Travel</span>
+      </a>
+      <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('search') }}">Hotels</a>
+        <a href="{{ url_for('search', deals=1) }}">Deals</a>
+        <a href="{{ url_for('bookings') }}">My Bookings</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <div class="logo footer-logo"><span class="logo-mark">C</span> Chwit<span class="logo-accent">Travel</span></div>
+        <p>Best travel deals in Mauritius, online. Book hotels across the island with instant confirmation.</p>
+      </div>
+      <div>
+        <h4>Support</h4>
+        <p>24/7 customer support<br>support@chwit.mu<br>+230 000 0000</p>
+      </div>
+      <div>
+        <h4>Why book with us</h4>
+        <p>Instant confirmation<br>No hidden fees<br>Secure booking</p>
+      </div>
+    </div>
+    <div class="container footnote">Demo prototype - rates shown are illustrative, not live inventory.</div>
+  </footer>
+</body>
+</html>

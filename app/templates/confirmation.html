@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Booking confirmed - Chwit Travel{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="confirm-hero">
+    <div class="ok">✅</div>
+    <h1>Booking confirmed</h1>
+    <p class="sub">Your reference</p>
+    <div class="ref-code">{{ r['ref'] }}</div>
+  </div>
+
+  <div class="section" style="display:flex; justify-content:center;">
+    <div class="form-card" style="width:100%;">
+      <div class="summary-box">
+        <div><span>Hotel</span><span>{{ r['hotel_name'] }}</span></div>
+        <div><span>Room</span><span>{{ r['room_name'] }}</span></div>
+        <div><span>Check-in</span><span>{{ r['check_in'] }}</span></div>
+        <div><span>Check-out</span><span>{{ r['check_out'] }}</span></div>
+        <div><span>Guests</span><span>{{ r['guests'] }}</span></div>
+        <div><span>Lead guest</span><span>{{ r['guest_name'] }}</span></div>
+        {% if r['promo'] %}<div><span>Offer applied</span><span class="badge">{{ r['promo'] }}</span></div>{% endif %}
+        <div><span>Price per night</span><span>€{{ r['price_per_night']|int }}</span></div>
+        <div class="total"><span>Total ({{ r['nights'] }} night{{ 's' if r['nights'] != 1 }})</span><span>€{{ r['total_price']|int }}</span></div>
+      </div>
+      <p class="meta">A confirmation email has been sent to {{ r['guest_email'] }} (demo - no email actually sent).
+      Find this booking anytime under <a href="{{ url_for('bookings', email=r['guest_email']) }}">My Bookings</a>.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

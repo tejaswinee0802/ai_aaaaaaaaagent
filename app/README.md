@@ -1,0 +1,50 @@
+# Chwit Travel - Hotel Reservation Web App (prototype)
+
+A working hotel reservation web app for a Mauritius online travel agency,
+modeled on the chwit.mu offering (hotels, deals, instant confirmation, 24/7
+support). Built with Flask + SQLite, using the repo's 110-hotel Mauritius
+inventory (`data/hotels_master.csv`).
+
+## Run it
+
+```bash
+pip install flask
+python3 app/server.py
+# open http://127.0.0.1:5050
+```
+
+## What's included
+
+| Page | Route | Features |
+|---|---|---|
+| Home | `/` | Hero search (district, dates, guests), Today's top deals, Guest favourites |
+| Search results | `/search` | Filters: name, district, dates, guests, max price, deals-only; sort by price/rating; per-night + total pricing |
+| Hotel detail | `/hotel/<id>` | Star tier, guest rating, promo badge, room-type rate table with promo strikethrough pricing, similar hotels in district |
+| Booking | `/book/<id>` | Stay summary, guest details form with validation, POST creates a reservation |
+| Confirmation | `/confirmation/<ref>` | Unique `CHW-XXXXXX` reference, full booking recap |
+| My bookings | `/bookings` | Look up all reservations by email |
+
+Reservations persist in `app/reservations.db` (SQLite, created on first run,
+git-ignored).
+
+## Architecture notes
+
+- `app/inventory.py` - inventory layer. Currently derives deterministic
+  **demo** rates/ratings/promos from the 110-hotel master list (seeded per
+  hotel, stable across restarts). Replace this module with your real
+  channel-manager / PMS feed to go live; the rest of the app only consumes
+  its dict shape.
+- `app/server.py` - routes, reservation storage, date/guest parsing.
+- `app/templates/`, `app/static/style.css` - UI. Brand colors are CSS
+  variables at the top of `style.css` (`--brand`, `--accent`, ...), so
+  re-skinning to the real chwit.mu palette is a one-block edit.
+
+## Known limitations (prototype scope)
+
+- Rates are illustrative, not live inventory (footer on every page says so).
+- No payment step, no real confirmation emails, no user accounts/login.
+- No flight booking (chwit.mu also sells flights) - hotel-only for now.
+- Visual design is a neutral tropical-OTA look: the live chwit.mu site was
+  not reachable from this build environment (network egress policy), so the
+  exact branding could not be replicated. Share brand assets/screenshots and
+  the CSS variables + logo block can be matched to the real site.

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ hotel.name }} - Chwit Travel{% endblock %}
+{% block content %}
+<div class="detail-head">
+  <div class="container">
+    <h1>{{ hotel.name }}</h1>
+    <div class="meta">{{ hotel.district }}, Mauritius · {{ hotel.star }}</div>
+    <div style="margin-top:8px;">
+      <span class="rating-pill">{{ hotel.rating }}</span>
+      <span class="meta">{{ hotel.reviews }} verified guest reviews</span>
+      {% if hotel.promo %} <span class="badge">{{ hotel.promo }}</span>{% endif %}
+    </div>
+    <p class="sub" style="margin-top:10px;">{{ hotel.blurb }}</p>
+  </div>
+</div>
+
+<div class="section container">
+  <h2>Choose your room</h2>
+  <p class="sub">{{ check_in }} → {{ check_out }} · {{ nights }} night{{ 's' if nights != 1 }} · {{ guests }} guest{{ 's' if guests != 1 }}</p>
+  <table class="rooms-table">
+    <tr><th>Room type</th><th>Price / night</th><th>Total ({{ nights }} nights)</th><th></th></tr>
+    {% for room in hotel.rooms %}
+    <tr>
+      <td>
+        <strong>{{ room.name }}</strong>
+        {% if room.promo_price %}<br><span class="badge">{{ hotel.promo }}</span>{% endif %}
+      </td>
+      <td>
+        {% if room.promo_price %}
+          <span class="strike">€{{ room.price }}</span> <strong>€{{ room.promo_price }}</strong>
+        {% else %}
+          <strong>€{{ room.price }}</strong>
+        {% endif %}
+      </td>
+      <td>€{{ (room.promo_price or room.price) * nights }}</td>
+      <td><a class="btn" href="{{ url_for('book', hotel_id=hotel.id, room=room.name, check_in=check_in, check_out=check_out, guests=guests) }}">Reserve</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+{% if similar %}
+<div class="section container">
+  <h2>More stays in {{ hotel.district }}</h2>
+  <div class="card-grid">
+    {% for h in similar %}
+    <div class="hotel-card">
+      {% if h.promo %}<span class="badge">{{ h.promo }}</span>{% endif %}
+      <h3><a href="{{ url_for('hotel_detail', hotel_id=h.id, check_in=check_in, check_out=check_out, guests=guests) }}">{{ h.name }}</a></h3>
+      <div class="meta">{{ h.star }}</div>
+      <div><span class="rating-pill">{{ h.rating }}</span></div>
+      <div class="price-line"><span class="price">€{{ h.lead_price }} <small>/ night</small></span></div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

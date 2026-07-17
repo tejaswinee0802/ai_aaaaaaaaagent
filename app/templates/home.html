@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero">
+  <div class="container">
+    <h1>Book your Mauritius stay</h1>
+    <p>110 hotels across the island - best deals, instant confirmation, 24/7 support.</p>
+    <form class="searchbar" action="{{ url_for('search') }}" method="get">
+      <div>
+        <label>Destination / district</label>
+        <select name="district">
+          <option value="">All of Mauritius</option>
+          {% for d in districts %}<option value="{{ d }}">{{ d }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>Check-in</label>
+        <input type="date" name="check_in" value="{{ default_in }}">
+      </div>
+      <div>
+        <label>Check-out</label>
+        <input type="date" name="check_out" value="{{ default_out }}">
+      </div>
+      <div>
+        <label>Guests</label>
+        <input type="number" name="guests" min="1" max="8" value="2">
+      </div>
+      <button class="btn" type="submit">Search hotels</button>
+    </form>
+  </div>
+</div>
+
+<div class="section container">
+  <h2>Today's top deals</h2>
+  <p class="sub">Hotels running a promotion or special offer right now.</p>
+  <div class="card-grid">
+    {% for h in deals %}
+    <div class="hotel-card">
+      <span class="badge">{{ h.promo }}</span>
+      <h3><a href="{{ url_for('hotel_detail', hotel_id=h.id) }}">{{ h.name }}</a></h3>
+      <div class="meta">{{ h.district }} · {{ h.star }}</div>
+      <div><span class="rating-pill">{{ h.rating }}</span> <span class="meta">{{ h.reviews }} reviews</span></div>
+      <div class="price-line">
+        <span class="strike">€{{ h.rooms[0].price }}</span>
+        <span class="price">€{{ h.lead_price }} <small>/ night</small></span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="section container">
+  <h2>Guest favourites</h2>
+  <p class="sub">The island's highest-rated stays.</p>
+  <div class="card-grid">
+    {% for h in featured %}
+    <div class="hotel-card">
+      {% if h.promo %}<span class="badge">{{ h.promo }}</span>{% endif %}
+      <h3><a href="{{ url_for('hotel_detail', hotel_id=h.id) }}">{{ h.name }}</a></h3>
+      <div class="meta">{{ h.district }} · {{ h.star }}</div>
+      <div><span class="rating-pill">{{ h.rating }}</span> <span class="meta">{{ h.reviews }} reviews</span></div>
+      <div class="price-line"><span class="price">€{{ h.lead_price }} <small>/ night</small></span></div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

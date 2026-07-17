@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Complete your booking - Chwit Travel{% endblock %}
+{% block content %}
+<div class="section container">
+  <h2>Complete your booking</h2>
+  <p class="sub">{{ hotel.name }} · {{ hotel.district }}, Mauritius</p>
+
+  <div class="form-card">
+    {% if errors %}
+    <div class="errors">
+      {% for e in errors %}<div>{{ e }}</div>{% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="summary-box">
+      <div><span>Room</span><span>{{ room.name }}</span></div>
+      <div><span>Check-in</span><span>{{ check_in }}</span></div>
+      <div><span>Check-out</span><span>{{ check_out }}</span></div>
+      <div><span>Guests</span><span>{{ guests }}</span></div>
+      <div><span>Price per night</span><span>€{{ price }}{% if room.promo_price %} <span class="badge">{{ hotel.promo }}</span>{% endif %}</span></div>
+      <div class="total"><span>Total ({{ nights }} night{{ 's' if nights != 1 }})</span><span>€{{ total }}</span></div>
+    </div>
+
+    <form method="post" action="{{ url_for('book', hotel_id=hotel.id) }}">
+      <input type="hidden" name="room" value="{{ room.name }}">
+      <input type="hidden" name="check_in" value="{{ check_in }}">
+      <input type="hidden" name="check_out" value="{{ check_out }}">
+      <input type="hidden" name="guests" value="{{ guests }}">
+      <label>Lead guest full name *</label>
+      <input type="text" name="guest_name" value="{{ guest_name }}" required>
+      <label>Email (confirmation is sent here) *</label>
+      <input type="email" name="guest_email" value="{{ guest_email }}" required>
+      <label>Phone</label>
+      <input type="tel" name="guest_phone" value="{{ guest_phone }}">
+      <br><br>
+      <button class="btn" type="submit">Confirm reservation</button>
+      <p class="meta" style="margin-top:10px;">Free cancellation up to 48h before check-in. No payment is taken in this prototype.</p>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}My bookings - Chwit Travel{% endblock %}
+{% block content %}
+<div class="section container">
+  <h2>My bookings</h2>
+  <p class="sub">Enter the email you booked with to see your reservations.</p>
+  <form method="get" action="{{ url_for('bookings') }}" style="display:flex; gap:10px; max-width:480px; margin-bottom:24px;">
+    <input type="email" name="email" value="{{ email }}" placeholder="you@example.com" required
+           style="flex:1; border:1px solid var(--line); border-radius:8px; padding:10px;">
+    <button class="btn btn-secondary" type="submit">Find bookings</button>
+  </form>
+
+  {% if email %}
+    {% if rows %}
+    <table class="bookings">
+      <tr><th>Ref</th><th>Hotel</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Guests</th><th>Total</th><th>Offer</th></tr>
+      {% for r in rows %}
+      <tr>
+        <td><a href="{{ url_for('confirmation', ref=r['ref']) }}">{{ r['ref'] }}</a></td>
+        <td>{{ r['hotel_name'] }}</td>
+        <td>{{ r['room_name'] }}</td>
+        <td>{{ r['check_in'] }}</td>
+        <td>{{ r['check_out'] }}</td>
+        <td>{{ r['guests'] }}</td>
+        <td>€{{ r['total_price']|int }}</td>
+        <td>{% if r['promo'] %}<span class="badge">{{ r['promo'] }}</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p>No bookings found for <strong>{{ email }}</strong>.</p>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}
