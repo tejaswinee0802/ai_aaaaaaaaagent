@@ -4,15 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}chwit! - Hotels in Mauritius{% endblock %}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='chwit-logo.svg') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="logo" href="{{ url_for('home') }}">chw<span class="chwit-i">&#305;<span class="chwit-esc">Esc</span></span>t!</a>
+      <a class="logo" href="{{ url_for('home') }}"><img class="logo-img" src="{{ url_for('static', filename='chwit-logo.svg') }}" alt="chwit!"></a>
       <nav>
         <a href="{{ url_for('home') }}">Home</a>
         <a href="{{ url_for('search') }}">Hotels</a>
@@ -29,7 +27,7 @@
   <footer class="site-footer">
     <div class="container footer-grid">
       <div>
-        <div class="logo footer-logo">chw<span class="chwit-i">&#305;<span class="chwit-esc">Esc</span></span>t!</div>
+        <div class="footer-logo"><img class="logo-img logo-img-lg" src="{{ url_for('static', filename='chwit-logo.svg') }}" alt="chwit!"></div>
         <div class="brand-tagline">Big World. Bigger You.</div>
         <p>Best travel deals in Mauritius, online. Book hotels across the island with instant confirmation.</p>
       </div>

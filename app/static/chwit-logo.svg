@@ -1,0 +1,57 @@
+<svg viewBox="0 0 1000 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="chwit!">
+  <g fill="#F8756C">
+    <!-- c -->
+    <path d="M 186 195
+             C 150 133, 58 138, 34 218
+             C 13 292, 62 358, 134 352
+             C 160 350, 178 336, 188 320
+             L 142 283
+             C 128 298, 104 294, 96 268
+             C 88 242, 102 218, 126 216
+             C 142 215, 154 224, 160 238
+             Z"/>
+    <!-- h -->
+    <path d="M 184 92
+             L 266 100
+             L 261 202
+             C 294 186, 332 200, 341 234
+             L 352 336
+             L 307 346
+             L 298 297
+             L 285 294
+             L 276 344
+             L 191 348
+             Z"/>
+    <!-- w -->
+    <path d="M 350 190
+             L 404 175
+             L 431 264
+             L 452 220
+             L 474 264
+             L 482 172
+             L 534 168
+             L 490 352
+             L 453 260
+             L 416 354
+             Z"/>
+    <!-- i stem (dotless) -->
+    <path d="M 578 168 L 638 160 L 648 338 L 572 342 Z"/>
+    <!-- Esc key badge -->
+    <g transform="rotate(15 626 110)">
+      <rect x="578" y="62" width="98" height="94" rx="26"/>
+      <text x="627" y="126" text-anchor="middle" fill="#ffffff"
+            font-family="Verdana, 'DejaVu Sans', sans-serif" font-weight="800"
+            font-size="35">Esc</text>
+    </g>
+    <!-- t -->
+    <path d="M 738 112 L 802 108 L 806 190 L 850 187 L 853 252 L 810 256
+             L 816 340 L 720 346 L 730 260 L 682 264 L 680 202 L 733 198 Z"/>
+    <!-- ! wedge -->
+    <path d="M 850 78
+             C 872 56, 920 58, 940 82
+             L 908 284
+             L 876 286
+             Z"/>
+    <circle cx="901" cy="338" r="42"/>
+  </g>
+</svg>

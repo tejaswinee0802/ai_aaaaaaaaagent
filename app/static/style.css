@@ -32,21 +32,11 @@ h1, h2, h3, h4 { line-height: 1.2; }
 .site-header { background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; }
 .header-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
 
-/* chwit! wordmark — heavy rounded lowercase, Esc-key badge as the dot of the i */
-.logo {
-  font-family: 'Baloo 2', 'Fredoka', 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
-  font-weight: 800; font-size: 1.9rem; letter-spacing: -.02em;
-  color: var(--brand); display: inline-flex; align-items: baseline; line-height: 1;
-}
-.logo:hover { text-decoration: none; filter: brightness(.95); }
-.chwit-i { position: relative; display: inline-block; }
-.chwit-esc {
-  position: absolute; top: -.34em; left: 50%;
-  transform: translateX(-50%) rotate(9deg);
-  background: var(--brand); color: #fff;
-  font-size: .26em; font-weight: 800; letter-spacing: 0;
-  padding: .12em .3em .18em; border-radius: .42em; line-height: 1;
-}
+/* chwit! wordmark — official logo traced as SVG (static/chwit-logo.svg) */
+.logo { display: inline-flex; align-items: center; }
+.logo:hover { filter: brightness(.95); }
+.logo-img { height: 44px; width: auto; display: block; }
+.logo-img-lg { height: 64px; }
 .brand-tagline {
   color: var(--brand); font-weight: 700; letter-spacing: .18em;
   font-size: .78rem; text-transform: uppercase; margin: 6px 0 10px;
@@ -153,7 +143,7 @@ h1, h2, h3, h4 { line-height: 1.2; }
 .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 24px; }
 @media (max-width: 700px) { .footer-grid { grid-template-columns: 1fr; } }
 .site-footer h4 { color: #fff; margin: 0 0 8px; }
-.footer-logo .chwit-esc { color: #fff; background: var(--brand); }
+.footer-logo { margin-bottom: 4px; }
 .footnote { margin-top: 24px; font-size: .8rem; opacity: .65; }
 
 table.bookings { width: 100%; border-collapse: collapse; background: var(--card); box-shadow: var(--shadow); border-radius: var(--radius); overflow: hidden; }
